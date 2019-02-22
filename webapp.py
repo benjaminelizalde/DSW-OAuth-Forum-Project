@@ -9,11 +9,9 @@ import json
 app = Flask(__name__)
 
 app.debug = True #Change this to False for production
-
+os.environ['OAUTHLIB_INSECURE_TRANSPORT']='1'
 app.secret_key = os.environ['SECRET_KEY'] #used to sign session cookies
 oauth = OAuth(app)
-
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 #Set up GitHub as OAuth provider
 github = oauth.remote_app(
@@ -28,23 +26,52 @@ github = oauth.remote_app(
     authorize_url='https://github.com/login/oauth/authorize' #URL for github's OAuth login
 )
 
-#TODO: Create and set a global variable for the name of you JSON file here.  The file will be storedd on Heroku, so you don't need to make it in GitHub
-
+#TODO: globalVar=postData Create and set a global variable for the name of you JSON file here.  The file will be storedd on Heroku, so you don't need to make it in GitHub
+pdata="static/posts.json"
 #TODO: Create the file on Heroku using os.system.  Ex) os.system("echo '[]'>"+myFile) puts '[]' into your file
-
+#os.system("echo '[]'>"+pdata)
 @app.context_processor
 def inject_logged_in():
     return {"logged_in":('github_token' in session)}
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    with open(pdata,"r") as postfile:
+        data=json.load(postfile)
+        mass =""
+        for com in data:
+            mass += com["user"]+": "+com["message"] + "<br>"
+        return render_template('home.html', past_posts=Markup(mass))
 
 @app.route('/posted', methods=['POST'])
 def post():
-    return render_template('home.html')
+
+    msg = request.form['message']
+    usr = session['user_data']['login'];
+
+    newpost = {}
+    newpost["user"] = usr
+    newpost["message"] = msg
+
+    #alldata += newpost
+    #os.run( json(alldata) > file )
+    with open(pdata,'r') as oldpost:
+        data=json.load(oldpost)
+        data.append(newpost)
+       # oldpost.seek(0)
+        #oldpost.truncate()
+        #data.append(newpost)
+
+    with open(pdata,'w') as oldpost:
+        json.dump(data,oldpost)
+
+    #return render_template('home.html' )
+    return redirect(url_for('.home'))
     #This function should add the new post to the JSON file of posts and then render home.html and display the posts.
-    #Every post should include the username of the poster and text of the post.
+    #Every post should include the username of the poster and text of the post.  poststohtml data
+    #('filename.JSON','r+')
+    # data=json.load(f)
+        #JSON.dump(data,f)
 
 #redirect to GitHub's OAuth page and confirm callback URL
 @app.route('/login')
@@ -58,7 +85,6 @@ def logout():
 
 @app.route('/login/authorized')
 def authorized():
-    print('done')
     resp = github.authorized_response()
     if resp is None:
         session.clear()
@@ -81,4 +107,5 @@ def get_github_oauth_token():
 
 
 if __name__ == '__main__':
+    os.system("echo json(array) > file")
     app.run()
