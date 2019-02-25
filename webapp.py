@@ -84,7 +84,7 @@ def logout():
     return render_template('message.html', message='You were logged out')
 
 @app.route('/login/authorized')
-def authorized(username = session['user_data']['login']):
+def authorized():
     resp = github.authorized_response()
     if resp is None:
         session.clear()
