@@ -38,6 +38,7 @@ def inject_logged_in():
 def home():
     with open(pdata,"r") as postfile:
         data=json.load(postfile)
+        data.reverse()
         mass =""
         for com in data:
             mass += com["user"]+": "+com["message"] + "<br>"
