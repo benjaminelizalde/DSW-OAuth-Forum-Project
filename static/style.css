@@ -5,3 +5,12 @@ body {
 #content {
      text-align:center;
 }
+
+.wid{
+  margin:auto;
+  margin-top:10px;
+  border: 2px solid black;
+  text-align: center;
+  overflow: auto;
+  max-width: 600px;
+}

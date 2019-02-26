@@ -1,6 +1,8 @@
+
 from flask import Flask, redirect, url_for, session, request, jsonify, Markup
 from flask_oauthlib.client import OAuth
 from flask import render_template
+from time import gmtime, strftime
 
 import pprint
 import os
@@ -9,7 +11,6 @@ import json
 app = Flask(__name__)
 
 app.debug = True #Change this to False for production
-os.environ['OAUTHLIB_INSECURE_TRANSPORT']='1'
 app.secret_key = os.environ['SECRET_KEY'] #used to sign session cookies
 oauth = OAuth(app)
 
@@ -36,8 +37,10 @@ def inject_logged_in():
 
 @app.route('/')
 def home():
+    print(strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime()))
     with open(pdata,"r") as postfile:
         data=json.load(postfile)
+        data.reverse()
         mass =""
         for com in data:
             mass += com["user"]+": "+com["message"] + "<br>"

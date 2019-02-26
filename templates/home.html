@@ -8,12 +8,14 @@
 
   {% if 'user_data' in session %}
     <form action='/posted' method="post">
-      <textarea name="message" style="width:100%; height:100px;"></textarea>
+      <textarea name="message" style="width:80%; height:100px;"></textarea>
       <br>
       <input type="submit" value="Post">
     </form>
-  {% endif %}
-  <p>{{ past_posts }}</p>
+    <div class="wid">
+      <p>{{ past_posts }}</p>
+      </div>
+    {% endif %}
 
 
 {% endblock %}
