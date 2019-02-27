@@ -2,7 +2,7 @@
 from flask import Flask, redirect, url_for, session, request, jsonify, Markup
 from flask_oauthlib.client import OAuth
 from flask import render_template
-from time import gmtime, strftime
+from time import localtime, strftime
 
 import pprint
 import os
@@ -37,24 +37,25 @@ def inject_logged_in():
 
 @app.route('/')
 def home():
-    print(strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime()))
+    print(strftime("%a, %d %b %Y %H:%M:%S", localtime()))
     with open(pdata,"r") as postfile:
         data=json.load(postfile)
         data.reverse()
         mass =""
         for com in data:
-            mass += com["user"]+": "+com["message"] + "<br>"
+            mass += com["user"] + ": "+com["message"] + "<br>"
         return render_template('home.html', past_posts=Markup(mass))
 
 @app.route('/posted', methods=['POST'])
 def post():
-
     msg = request.form['message']
     usr = session['user_data']['login'];
-
     newpost = {}
-    newpost["user"] = usr
-    newpost["message"] = msg
+    if usr == "DaZenMesa" or "benjaminelizalde":
+        newpost["user"] = "<font color=#0008ff> <b>" +'[ADMIN]'+" "+ usr + "</b></font>"
+    else:
+        newpost["user"] = "<font color=#000000> <b>" + usr + "</b></font>"
+    newpost["message"] = "<b>" + msg + "</b>" + ' :' + str(strftime( "%H:%M:%S", localtime()))
 
     #alldata += newpost
     #os.run( json(alldata) > file )
