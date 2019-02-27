@@ -55,7 +55,7 @@ def post():
         newpost["user"] = "<font color=#0008ff> <b>" +'[ADMIN]'+" "+ usr + "</b></font>"
     else:
         newpost["user"] = "<font color=#000000> <b>" + usr + "</b></font>"
-    newpost["message"] = "<b>" + msg + "</b>" + ' :' + str(strftime( "%H:%M:%S", mktime()))
+    newpost["message"] = "<b>" + msg + "</b>" + ' :' + str(strftime( "%H:%M:%S", localtime()))
 
     #alldata += newpost
     #os.run( json(alldata) > file )
