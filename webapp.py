@@ -2,7 +2,7 @@
 from flask import Flask, redirect, url_for, session, request, jsonify, Markup
 from flask_oauthlib.client import OAuth
 from flask import render_template
-from time import mktime, strftime
+from time import localtime, strftime
 
 import pprint
 import os
@@ -37,7 +37,7 @@ def inject_logged_in():
 
 @app.route('/')
 def home():
-    print(strftime("%a, %d %b %Y %H:%M:%S", mktime()))
+    print(strftime("%a, %d %b %Y %H:%M:%S", localtime()))
     with open(pdata,"r") as postfile:
         data=json.load(postfile)
         data.reverse()
