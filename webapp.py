@@ -78,7 +78,7 @@ def Forum2():
             mass += com["user"] + ": "+com["message"] + "<br>"
         return render_template('Forum2.html', past_posts2=Markup(mass))
 
-@app.route('/posted1', methods=['POST'])
+@app.route('/posted', methods=['POST'])
 def post():
     msg = request.form['message']
     usr = session['user_data']['login'];
@@ -104,6 +104,7 @@ def post():
     #return render_template('home.html' )
     print(request.form)
     redirect= ""
+
     if "Forum1" in request.form:
         redirect= "Forum1"
         return render_template('%s.html' % redirect, past_posts1=Markup(Post_Html1()))
@@ -118,7 +119,6 @@ def post():
     #('filename.JSON','r+')
     # data=json.load(f)
         #JSON.dump(data,f)
-
 
 #redirect to GitHub's OAuth page and confirm callback URL
 @app.route('/login')
@@ -146,7 +146,6 @@ def authorized():
             print(inst)
             message='Unable to login, please try again.  '
     return render_template('message.html', message=message)
-
 
 #the tokengetter is automatically called to check who is logged in.
 @github.tokengetter
