@@ -28,30 +28,62 @@ github = oauth.remote_app(
 )
 
 #TODO: globalVar=postData Create and set a global variable for the name of you JSON file here.  The file will be storedd on Heroku, so you don't need to make it in GitHub
-pdata="static/posts.json"
+pdata1="static/posts1.json"
+pdata2="static/posts2.json"
 #TODO: Create the file on Heroku using os.system.  Ex) os.system("echo '[]'>"+myFile) puts '[]' into your file
 #os.system("echo '[]'>"+pdata)
-@app.context_processor
-def inject_logged_in():
-    return {"logged_in":('github_token' in session)}
 
-@app.route('/')
-def home():
-    print(strftime("%a, %d %b %Y %H:%M:%S", localtime()))
-    with open(pdata,"r") as postfile:
+def Post_Html1():
+    with open(pdata1,"r") as postfile:
         data=json.load(postfile)
         data.reverse()
         mass =""
         for com in data:
             mass += com["user"] + ": "+com["message"] + "<br>"
-        return render_template('home.html', past_posts=Markup(mass))
+    return mass
 
-@app.route('/posted', methods=['POST'])
+def Post_Html2():
+    with open(pdata2,"r") as postfile:
+        data=json.load(postfile)
+        data.reverse()
+        mass =""
+        for com in data:
+            mass += com["user"] + ": "+com["message"] + "<br>"
+    return mass
+
+@app.context_processor
+def inject_logged_in():
+    return {"logged_in":('github_token' in session)}
+
+@app.route('/')
+def Forum1():
+    print(strftime("%a, %d %b %Y %H:%M:%S", localtime()))
+    with open(pdata1,"r") as postfile:
+        data=json.load(postfile)
+        data.reverse()
+        mass =""
+        for com in data:
+            mass += com["user"] + ": "+com["message"] + "<br>"
+        return render_template('Forum1.html', past_posts1=Markup(mass))
+
+@app.route('/Forum2')
+def Forum2():
+    redirect='Forum2'
+    print(strftime("%a, %d %b %Y %H:%M:%S", localtime()))
+    with open(pdata2,"r") as postfile:
+        data=json.load(postfile)
+        data.reverse()
+        mass =""
+        for com in data:
+            mass += com["user"] + ": "+com["message"] + "<br>"
+        return render_template('Forum2.html', past_posts2=Markup(mass))
+
+@app.route('/posted1', methods=['POST'])
 def post():
     msg = request.form['message']
     usr = session['user_data']['login'];
     newpost = {}
-    if usr == "DaZenMesa" or "benjaminelizalde":
+    if usr == "DaZenMesa" or usr == "benjaminelizalde":
         newpost["user"] = "<font color=#0008ff> <b>" +'[ADMIN]'+" "+ usr + "</b></font>"
     else:
         newpost["user"] = "<font color=#000000> <b>" + usr + "</b></font>"
@@ -59,28 +91,39 @@ def post():
 
     #alldata += newpost
     #os.run( json(alldata) > file )
-    with open(pdata,'r') as oldpost:
+    with open(pdata1,'r') as oldpost:
         data=json.load(oldpost)
         data.append(newpost)
        # oldpost.seek(0)
         #oldpost.truncate()
         #data.append(newpost)
 
-    with open(pdata,'w') as oldpost:
+    with open(pdata1,'w') as oldpost:
         json.dump(data,oldpost)
 
     #return render_template('home.html' )
-    return redirect(url_for('.home'))
+    print(request.form)
+    redirect= ""
+    if "Forum1" in request.form:
+        redirect= "Forum1"
+        return render_template('%s.html' % redirect, past_posts1=Markup(Post_Html1()))
+    if "Forum2" in request.form:
+        redirect= "Forum2"
+        return render_template('%s.html' % redirect, past_posts2=Markup(Post_Html2()))
+    print(redirect)
+
+    #return redirect(url_for('.' + redirect))
     #This function should add the new post to the JSON file of posts and then render home.html and display the posts.
     #Every post should include the username of the poster and text of the post.  poststohtml data
     #('filename.JSON','r+')
     # data=json.load(f)
         #JSON.dump(data,f)
 
+
 #redirect to GitHub's OAuth page and confirm callback URL
 @app.route('/login')
 def login():
-    return github.authorize(callback=url_for('authorized', _external=True, _scheme='https')) #callback URL must match the pre-configured callback URL
+    return github.authorize(callback=url_for('authorized', _external=True, _scheme='http')) #callback URL must match the pre-configured callback URL
 
 @app.route('/logout')
 def logout():
@@ -103,6 +146,7 @@ def authorized():
             print(inst)
             message='Unable to login, please try again.  '
     return render_template('message.html', message=message)
+
 
 #the tokengetter is automatically called to check who is logged in.
 @github.tokengetter

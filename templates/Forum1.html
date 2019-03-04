@@ -3,17 +3,17 @@
 {% block title %}Forum{% endblock %}
 
 {% block content %}
-  <h1>Forum</h1>
+  <h1>Forum 1</h1>
   <p>{{message}}</p>
 
   {% if 'user_data' in session %}
     <form action='/posted' method="post">
       <textarea name="message" style="width:80%; height:100px;"></textarea>
       <br>
-      <input type="submit" value="Post">
+      <input type="submit" value="Post" name='Forum1'>
     </form>
     <div class="wid">
-      <p>{{ past_posts }}</p>
+      <p>{{ past_posts1 }}</p>
       </div>
     {% endif %}
 
