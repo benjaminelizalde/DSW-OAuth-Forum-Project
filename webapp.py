@@ -78,8 +78,8 @@ def Forum2():
             mass += com["user"] + ": "+com["message"] + "<br>"
         return render_template('Forum2.html', past_posts2=Markup(mass))
 
-@app.route('/posted', methods=['POST'])
-def post():
+@app.route('/posted1', methods=['POST'])
+def post1():
     msg = request.form['message']
     usr = session['user_data']['login'];
     newpost = {}
@@ -99,6 +99,48 @@ def post():
         #data.append(newpost)
 
     with open(pdata1,'w') as oldpost:
+        json.dump(data,oldpost)
+
+    #return render_template('home.html' )
+    print(request.form)
+    redirect= ""
+
+    if "Forum1" in request.form:
+        redirect= "Forum1"
+        return render_template('%s.html' % redirect, past_posts1=Markup(Post_Html1()))
+    if "Forum2" in request.form:
+        redirect= "Forum2"
+        return render_template('%s.html' % redirect, past_posts2=Markup(Post_Html2()))
+    print(redirect)
+
+    #return redirect(url_for('.' + redirect))
+    #This function should add the new post to the JSON file of posts and then render home.html and display the posts.
+    #Every post should include the username of the poster and text of the post.  poststohtml data
+    #('filename.JSON','r+')
+    # data=json.load(f)
+        #JSON.dump(data,f)
+
+@app.route('/posted2', methods=['POST'])
+def post2():
+    msg = request.form['message']
+    usr = session['user_data']['login'];
+    newpost = {}
+    if usr == "DaZenMesa" or usr == "benjaminelizalde":
+        newpost["user"] = "<font color=#0008ff> <b>" +'[ADMIN]'+" "+ usr + "</b></font>"
+    else:
+        newpost["user"] = "<font color=#000000> <b>" + usr + "</b></font>"
+    newpost["message"] = "<b>" + msg + "</b>" + ' :' + str(strftime( "%H:%M:%S", localtime()))
+
+    #alldata += newpost
+    #os.run( json(alldata) > file )
+    with open(pdata2,'r') as oldpost:
+        data=json.load(oldpost)
+        data.append(newpost)
+       # oldpost.seek(0)
+        #oldpost.truncate()
+        #data.append(newpost)
+
+    with open(pdata2,'w') as oldpost:
         json.dump(data,oldpost)
 
     #return render_template('home.html' )
