@@ -13,7 +13,10 @@
       <input type="submit" value="Post" name='Forum1'>
     </form>
     <div class="wid">
-      <p>{{ past_posts1 }}</p>
+        {% for item in past_posts1 %}
+          <div><p>{{ item['user'] }}</p><p>{{ item['msg'] }}</p></div>
+        {% endfor %}
+        <button name="delete" type="button" class="btn btn-danger">Delete</button>
       </div>
     {% endif %}
 
